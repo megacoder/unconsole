@@ -54,7 +54,7 @@ class	UnConsole( object ):
 				cmd
 			)
 			fn = os.path.join(
-				self.prefix,
+				self.prefix if self.prefix else '.',
 				bn
 			)
 		return fn
