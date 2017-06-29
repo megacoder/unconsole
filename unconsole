@@ -1,0 +1,116 @@
+#!/usr/bin/python
+# vim: noet sw=4 ts=4
+
+import	sys
+import	os
+import	re
+import	argparse
+
+class	UnConsole( object ):
+
+	def	__init__( self, prefix = '.' ):
+		self.fileno = 0
+		self.prefix = prefix
+		self.out    = None
+		try:
+			os.makedirs( self.prefix )
+		except:
+			pass
+		return
+
+	def	do_name( self, name ):
+		if os.path.isfile( name ):
+			with open( name ) as f:
+				self.process( f )
+		elif os.path.isdir( name ):
+			for entry in sorted( os.listdir( name ) ):
+				self.do_name(
+					os.path.join(
+						name,
+						entry
+					)
+				)
+		else:
+			# Silently ignore this file.
+			pass
+		return
+
+	def	__compute_filename( self, s ):
+		cmd = re.sub(
+			r'[^-0-9a-zA-Z_]',
+			r'_',
+			s
+		).replace( '__', '_' )
+		while cmd.startswith( '_' ):
+			cmd = cmd[1:]
+		while cmd.endswith( '_' ):
+			cmd = cmd[:-1]
+		if len(cmd) == 0:
+			fn = None
+		else:
+			self.fileno += 1
+			bn = '%03d-%s' % (
+				self.fileno,
+				cmd
+			)
+			fn = os.path.join(
+				self.prefix,
+				bn
+			)
+		return fn
+
+	def	__print( self, s ):
+		if self.out:
+			print >>self.out, s
+		return
+
+	def	__change_output( self, base ):
+		if self.out:
+			self.out.close()
+		fn = self.__compute_filename( base )
+		if fn:
+			self.out = open( fn, 'w' )
+		else:
+			self.out = None
+		return
+
+	def	process( self, f = sys.stdin ):
+		for line in f:
+			if line.startswith( '[root@' ):
+				eos = line.find( ']' )
+				if eos > -1:
+					fn = self.__change_output( line[eos:] )
+			self.__print( line.rstrip() )
+		return
+
+if __name__ == '__main__':
+	p = argparse.ArgumentParser(
+		prog = os.path.splitext(
+			os.path.basename( sys.argv[0] )
+		)[0],
+		description = 'Explode multiple console commands into files'
+	)
+	p.add_argument(
+		'-o',
+		'--prefix',
+		metavar = 'DIR',
+		dest    = 'prefix',
+		default = None,
+		help    = 'send output to DIR instead of pwd(1)'
+	)
+	p.add_argument(
+		'files',
+		metavar = 'FILE',
+		nargs   = '*',
+		help    = 'process files instead of stdin'
+	)
+	args = p.parse_args()
+	uc = UnConsole(
+		prefix = args.prefix,
+	)
+	if len(args.files) == 0:
+		uc.process()
+	else:
+		for fn in args.files:
+			uc.do_name( fn )
+	exit( 0 )

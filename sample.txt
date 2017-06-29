@@ -1,0 +1,107 @@
+
+Please find the details for 1 and 2.(DB Nodes and SGA size.)
+
+DB Node1	-	SGA SIZE
+up002			30G
+p001			30G	
+
+
+DB Node2	-	SGA SIZE
+PSTG			30G
+p002			15G
+P001CC			16G
+up002			30G
+T001			16G
+==============================MEM INFO =======================================
+
+[root@crsnneuclient01 crash]# cat /proc/meminfo
+MemTotal:       264283156 kB
+MemFree:         4836708 kB
+Buffers:          236168 kB
+Cached:         186366556 kB
+SwapCached:            0 kB
+Active:          5077040 kB
+Inactive:       185447848 kB
+Active(anon):    3940172 kB
+Inactive(anon):   134704 kB
+Active(file):    1136868 kB
+Inactive(file): 185313144 kB
+Unevictable:      372024 kB
+Mlocked:          372024 kB
+SwapTotal:      25165820 kB
+SwapFree:       25165820 kB
+Dirty:              4432 kB
+Writeback:             0 kB
+AnonPages:       4382532 kB
+Mapped:           205756 kB
+Shmem:               668 kB
+Slab:             738280 kB
+SReclaimable:     579020 kB
+SUnreclaim:       159260 kB
+KernelStack:       10920 kB
+PageTables:       133004 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:    125188612 kB
+Committed_AS:    8388480 kB
+VmallocTotal:   34359738367 kB
+VmallocUsed:     1048912 kB
+VmallocChunk:   34358543028 kB
+HardwareCorrupted:     0 kB
+HugePages_Total:   31366
+HugePages_Free:     9474
+HugePages_Rsvd:     9459
+HugePages_Surp:        0
+Hugepagesize:       2048 kB
+DirectMap4k:        6144 kB
+DirectMap2M:     2082816 kB
+DirectMap1G:    266338304 kB
+[root@crsnneuclient01 crash]#
+
+=====================
+
+[root@crsnneuclient02 ~]# cat /proc/meminfo
+MemTotal:       264283156 kB
+MemFree:        13775692 kB
+Buffers:         1097716 kB
+Cached:         117159704 kB
+SwapCached:         1964 kB
+Active:         35341272 kB
+Inactive:       89582656 kB
+Active(anon):   22310232 kB
+Inactive(anon):   592940 kB
+Active(file):   13031040 kB
+Inactive(file): 88989716 kB
+Unevictable:      360324 kB
+Mlocked:          360324 kB
+SwapTotal:      25165820 kB
+SwapFree:       25004000 kB
+Dirty:              3932 kB
+Writeback:             0 kB
+AnonPages:       7184676 kB
+Mapped:         13221984 kB
+Shmem:          16012844 kB
+Slab:            1189604 kB
+SReclaimable:     899656 kB
+SUnreclaim:       289948 kB
+KernelStack:       96592 kB
+PageTables:      2708976 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:    98443780 kB
+Committed_AS:   38601084 kB
+VmallocTotal:   34359738367 kB
+VmallocUsed:     1049172 kB
+VmallocChunk:   34358550456 kB
+HardwareCorrupted:     0 kB
+HugePages_Total:   57484
+HugePages_Free:    17527
+HugePages_Rsvd:     9316
+HugePages_Surp:        0
+Hugepagesize:       2048 kB
+DirectMap4k:        6144 kB
+DirectMap2M:     2082816 kB
+DirectMap1G:    266338304 kB
+[root@crsnneuclient02 ~]#
