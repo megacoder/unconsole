@@ -19,7 +19,7 @@ ${TARGETS}::
 
 clobber distclean:: clean
 
-ARGS	= sample.txt
+ARGS	= --prefix=WORKAREA sample.txt
 
 check::	unconsole
 	./unconsole ${ARGS}
