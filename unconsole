@@ -9,14 +9,30 @@ import	argparse
 class	UnConsole( object ):
 
 	def	__init__( self, prefix = '.' ):
-		self.fileno = 0
-		self.prefix = prefix
-		self.out    = None
+		self.set_shell_regex()
+		self.fileno   = 0
+		self.prefix   = prefix
+		self.out      = None
 		try:
 			os.makedirs( self.prefix )
 		except:
 			pass
 		return
+
+	def	set_shell_regex( self, pattern = r'\[root@[^\]]*\]' ):
+		self.pattern = pattern
+		regex = r'^({0})(.*)?'.format( pattern )
+		try:
+			self.re_shell = re.compile( regex )
+		except Exception, e:
+			print >>sys.stderr, 'set_shell_regex( regex="{0}" )'.format(
+				regex
+			)
+			raise e
+		return
+
+	def	get_shell_regex( self ):
+		return self.pattern
 
 	def	do_name( self, name ):
 		if os.path.isfile( name ):
@@ -76,19 +92,23 @@ class	UnConsole( object ):
 
 	def	process( self, f = sys.stdin ):
 		for line in f:
-			if line.startswith( '[root@' ):
-				eos = line.find( ']' )
-				if eos > -1:
-					fn = self.__change_output( line[eos:] )
-			self.__print( line.rstrip() )
+			line = line.rstrip()
+			mo = self.re_shell.search( line )
+			if mo:
+				fn = self.__change_output( mo.group(2) )
+			self.__print( line )
 		return
 
-if __name__ == '__main__':
+	def	report( self ):
+		pass
+
+def	main():
 	p = argparse.ArgumentParser(
 		prog = os.path.splitext(
 			os.path.basename( sys.argv[0] )
 		)[0],
-		description = 'Explode multiple console commands into files'
+		description = 'Explode multiple console commands into files',
+		# formatter_class = argparse.ArgumentDefaultsHelpFormatter,
 	)
 	p.add_argument(
 		'-o',
@@ -97,6 +117,13 @@ if __name__ == '__main__':
 		dest    = 'prefix',
 		default = None,
 		help    = 'send output to DIR instead of pwd(1)'
+	)
+	p.add_argument(
+		'-p',
+		'--prompt',
+		metavar = 'RE',
+		dest = 'shell_regex',
+		help = 'identify shell prompts via regex RE'
 	)
 	p.add_argument(
 		'files',
@@ -108,9 +135,16 @@ if __name__ == '__main__':
 	uc = UnConsole(
 		prefix = args.prefix,
 	)
+	if args.shell_regex:
+		self.set_shell_regex( args.shell_regex )
 	if len(args.files) == 0:
 		uc.process()
 	else:
 		for fn in args.files:
 			uc.do_name( fn )
 	exit( 0 )
+
+if __name__ == '__main__':
+	main()
+	# NOT REACHED
+	exit( 666 )
